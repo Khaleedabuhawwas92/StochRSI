@@ -4,10 +4,11 @@ const {
   getAccountBalanceUSDT,
 } = require('../Serves-Funcations/allGetFuncations');
 const client = Binance({
-  apiKey: 'xmYqKoIWUdT4ieSrSzH4o5YNvJjRvLgA8pF8oj8wMwKVb1DFSeahd7BFWwe9yjvg',
-  apiSecret: 'rZTY0b63CLLx7VtIc3iHHelr4Pii1Pn7mXxx1tyhmInJABd97TDZVMBCCq7sPZCM',
+  apiKey: "9MDlaXiZ3v97EwANLckWfnEliYySPp4ejJYCw4XnH4bbUzi5F3PPK1Genx0Ym4vZ",
+  apiSecret:
+     "V7yf8DwR5Nw3hjW9pmge7nxlc0AK8WdIKIrq4YbfbLMQJao8t1pQYxdMyD5p3kF6",
+  timestamp: 5000,
 });
-
 // Buy Market
 async function BuyMarket(symbol) {
   getSymbolPrice(symbol)
