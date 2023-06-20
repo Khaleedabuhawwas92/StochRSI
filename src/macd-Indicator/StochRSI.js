@@ -6,12 +6,7 @@ const { StochasticRSI } = require('technicalindicators');
 
 const { BuyMarket } = require('../Order-Functions/buyBuyMrket');
 const { SellMarket } = require('../Order-Functions/sellByMarket');
-// const { BuyLimit } = require("../Order-Functions/buyBuyLimit");
-// const { cancel } = require("@alpacahq/alpaca-trade-api/dist/resources/order");
 
-// async function buy() {
-//    BuyLimit();
-// }
 
 // // Configure your Binance API credentials
 const client = Binance({
@@ -21,7 +16,7 @@ const client = Binance({
   timestamp: 5000,
 });
 const symbol = 'LINAUSDT';
-const timeframe = '1s';
+const interval = '1h';
 const stochLinePeriod = 14;
 const rsiLinePeriod = 14;
 const kPeriod = 3;
@@ -39,7 +34,7 @@ const dRange = [20, 80];
 
 
 
-async function getLastOrder(symbol) {
+async function getLastOrder() {
   try {
     const trades = await client.myTrades({ symbol });
     if (trades.length > 0) {
@@ -77,9 +72,9 @@ async function getLastOrde4Sell(symbol) {
 }
 
 
-async function checkStochRSI(symbol) {
+async function checkStochRSI() {
   client
-    .candles({ symbol:symbol, interval: timeframe, limit: 100 })
+    .candles({ symbol, interval, limit: 100 })
     .then((candles) => {
       // Extract the closing prices from the candlestick data
       const closePrices = candles.map((candle) => parseFloat(candle.close));
@@ -126,9 +121,9 @@ async function checkStochRSI(symbol) {
     });
 }
 
-// const intervalTime = 1000; // Interval time in milliseconds
-// setInterval(, intervalTime);
+const intervalTime = 1000; // Interval time in milliseconds
+setInterval(checkStochRSI, intervalTime);
 // MACDandRSI();
 // testMacd();
 // BuyMarket(symbol);
-checkStochRSI(symbol)
+// checkStochRSI()
