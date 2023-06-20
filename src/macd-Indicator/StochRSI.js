@@ -1,18 +1,15 @@
 const Binance = require('binance-api-node').default;
 const tulind = require('tulind');
 
-
 const { StochasticRSI } = require('technicalindicators');
 
 const { BuyMarket } = require('../Order-Functions/buyBuyMrket');
 const { SellMarket } = require('../Order-Functions/sellByMarket');
 
-
 // // Configure your Binance API credentials
 const client = Binance({
-  apiKey: "9MDlaXiZ3v97EwANLckWfnEliYySPp4ejJYCw4XnH4bbUzi5F3PPK1Genx0Ym4vZ",
-  apiSecret:
-     "V7yf8DwR5Nw3hjW9pmge7nxlc0AK8WdIKIrq4YbfbLMQJao8t1pQYxdMyD5p3kF6",
+  apiKey: '9MDlaXiZ3v97EwANLckWfnEliYySPp4ejJYCw4XnH4bbUzi5F3PPK1Genx0Ym4vZ',
+  apiSecret: 'V7yf8DwR5Nw3hjW9pmge7nxlc0AK8WdIKIrq4YbfbLMQJao8t1pQYxdMyD5p3kF6',
   timestamp: 5000,
 });
 const symbol = 'LINAUSDT';
@@ -23,16 +20,12 @@ const kPeriod = 3;
 const dPeriod = 3;
 
 // Set the %K and %D range
-const kRange = [20, 80];
-const dRange = [20, 80];
+const kRange = [0, 20];
+const dRange = [0, 20];
 
 // Define the MACD parameters
 
-
 // Function to check the MACD and execute trades
-
-
-
 
 async function getLastOrder() {
   try {
@@ -71,7 +64,6 @@ async function getLastOrde4Sell(symbol) {
   }
 }
 
-
 async function checkStochRSI() {
   client
     .candles({ symbol, interval, limit: 100 })
@@ -102,18 +94,8 @@ async function checkStochRSI() {
           maStochRsiLineCurrent >= dRange[0] &&
           maStochRsiLineCurrent <= dRange[1]
         ) {
-          if (maStochLineCurrent > maStochRsiLineCurrent) {
-            getLastOrder(symbol);
-          } else if (maStochLineCurrent < maStochRsiLineCurrent) {
-            getLastOrde4Sell(symbol);
-          }
-        } else {
-          console.log(
-            'MA Stoch Line is up but MA Stoch RSI Line is not within %K and %D range.'
-          );
-        }
-      } else {
-        console.log('MA Stoch Line is not up.');
+          console.log(symbol);
+        } 
       }
     })
     .catch((error) => {
