@@ -1,6 +1,7 @@
 const Binance = require("binance-api-node").default;
-const { MACD, RSI } = require("technicalindicators");
+const { MACD, StochasticRSI } = require("technicalindicators");
 const tulind = require("tulind");
+const axios = require("axios");
 
 // Instantiate the client with your API key and secret
 const client = Binance({
@@ -10,16 +11,15 @@ const client = Binance({
    timestamp: 5000,
 });
 const symbol = "LINAUSDT";
-const interval = '1h';
+const interval = "1h";
 const stochLinePeriod = 14;
 const rsiLinePeriod = 14;
 const kPeriod = 3;
 const dPeriod = 3;
 
 // Set the %K and %D range
-const kRange = [20, 80];
-const dRange = [20, 80];
-
+const kRange = [0, 22];
+const dRange = [0, 22];
 
 function getAccountBalance() {
    return client.accountInfo().then((accountInfo) => {
@@ -91,6 +91,7 @@ function testMacd() {
             "TUSDUSDT",
             "BTCUSDT",
             "ETHUSDT",
+            "USDPUSDT",
          ];
          // Filter for cryptocurrencies of interest
          const goodCurrencies = symbols.filter(
@@ -107,7 +108,7 @@ function testMacd() {
          goodCurrencies.forEach((currency, index) => {
             const symbol = currency.symbol;
             client
-               .candles({ symbol:symbol, interval:"1h", limit: 100 })
+               .candles({ symbol: symbol, interval: "1h", limit: 100 })
                .then((candles) => {
                   // Extract the closing prices from the candlestick data
                   const closePrices = candles.map((candle) =>
@@ -138,17 +139,23 @@ function testMacd() {
                         maStochRsiLineCurrent <= dRange[1]
                      ) {
                         if (maStochLineCurrent > maStochRsiLineCurrent) {
-                           getLastOrder(symbol);
-                        } else if (maStochLineCurrent < maStochRsiLineCurrent) {
-                           getLastOrde4Sell(symbol);
+                           const value =
+                              maStochLineCurrent - maStochRsiLineCurrent;
+                              console.log(value);
+                              console.log(symbol);
+                           // axios
+                           //    .post("http://localhost:8000/api/symbol", {
+                           //       title: symbol,
+                           //       spreads: value,
+                           //    })
+                           //    .then(function (response) {
+
+                           //    })
+                           //    .catch(function (error) {
+                           //       console.log(error);
+                           //    });
                         }
-                     } else {
-                        console.log(
-                           "MA Stoch Line is up but MA Stoch RSI Line is not within %K and %D range."
-                        );
                      }
-                  } else {
-                     console.log("MA Stoch Line is not up.");
                   }
                })
                .catch((error) => {
@@ -156,7 +163,6 @@ function testMacd() {
                });
 
             // Fetch historical candlestick data for the symbol
-            console.log(symbol);
          });
       })
       .catch((error) => {
@@ -165,7 +171,6 @@ function testMacd() {
 }
 
 // Define the parameters for the limit order
-
 
 function isSingleLineAndMACDUnderZero(data) {
    const input = {
