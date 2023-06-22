@@ -108,7 +108,7 @@ function testMacd() {
          goodCurrencies.forEach((currency, index) => {
             const symbol = currency.symbol;
             client
-               .candles({ symbol: symbol, interval: "4h", limit: 100 })
+               .candles({ symbol: symbol, interval: "1h", limit: 100 })
                .then((candles) => {
                   // Extract the closing prices from the candlestick data
                   const closePrices = candles.map((candle) =>
@@ -144,19 +144,25 @@ function testMacd() {
                            console.log(symbol);
                            console.log(value);
 
+                        }else{
+
                         }
+                     }else{
+
                      }
+                  }else{
+
                   }
                })
                .catch((error) => {
-                  console.error("Error retrieving candlestick data:", error);
+
                });
 
             // Fetch historical candlestick data for the symbol
          });
       })
       .catch((error) => {
-         console.error("Error fetching exchange information:", error);
+         console.log("Error " +symbol);
       });
 }
 
