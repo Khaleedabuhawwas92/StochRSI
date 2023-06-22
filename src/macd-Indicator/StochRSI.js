@@ -21,8 +21,10 @@ const kPeriod = 3;
 const dPeriod = 3;
 
 // Set the %K and %D range
-const kRange = [0, 20];
-const dRange = [0, 20];
+const kRange = [20, 80];
+const dRange = [20, 80];
+const cRange = [0, 20];
+const eRange = [0, 20];
 
 // Define the MACD parameters
 
@@ -90,6 +92,8 @@ async function checkStochRSI() {
          if (maStochLineCurrent > 0) {
             // Check if the MA Stoch RSI Line is between %K and %D range
             if (
+               maStochLineCurrent >= kRange[0] &&
+               maStochLineCurrent <= kRange[1] &&
                maStochRsiLineCurrent >= dRange[0] &&
                maStochRsiLineCurrent <= dRange[1]
             ) {
@@ -99,7 +103,16 @@ async function checkStochRSI() {
                   getLastOrde4Sell(symbol);
                }
             } else {
-               getLastOrde4Sell(symbol);
+               if (
+                  maStochLineCurrent >= cRange[0] &&
+                  maStochLineCurrent <= cRange[1] &&
+                  maStochRsiLineCurrent >= eRange[0] &&
+                  maStochRsiLineCurrent <= eRange[1]
+               ) {
+                  if (maStochLineCurrent < maStochRsiLineCurrent) {
+                     getLastOrde4Sell(symbol);
+                  }
+               }
             }
          }
       })

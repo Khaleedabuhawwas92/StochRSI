@@ -18,8 +18,8 @@ const kPeriod = 3;
 const dPeriod = 3;
 
 // Set the %K and %D range
-const kRange = [0, 22];
-const dRange = [0, 22];
+const kRange = [0, 20];
+const dRange = [0, 20];
 
 function getAccountBalance() {
    return client.accountInfo().then((accountInfo) => {
@@ -108,7 +108,7 @@ function testMacd() {
          goodCurrencies.forEach((currency, index) => {
             const symbol = currency.symbol;
             client
-               .candles({ symbol: symbol, interval: "1h", limit: 100 })
+               .candles({ symbol: symbol, interval: "1d", limit: 100 })
                .then((candles) => {
                   // Extract the closing prices from the candlestick data
                   const closePrices = candles.map((candle) =>
@@ -138,22 +138,20 @@ function testMacd() {
                         maStochRsiLineCurrent >= dRange[0] &&
                         maStochRsiLineCurrent <= dRange[1]
                      ) {
+                        const value =
+                           maStochLineCurrent - maStochRsiLineCurrent;
                         if (maStochLineCurrent > maStochRsiLineCurrent) {
-                           const value =
-                              maStochLineCurrent - maStochRsiLineCurrent;
-                              console.log(value);
-                              console.log(symbol);
-                           // axios
-                           //    .post("http://localhost:8000/api/symbol", {
-                           //       title: symbol,
-                           //       spreads: value,
-                           //    })
-                           //    .then(function (response) {
-
-                           //    })
-                           //    .catch(function (error) {
-                           //       console.log(error);
-                           //    });
+                           console.log(symbol);
+                           console.log(value);
+                           axios
+                              .post("http://localhost:8000/api/symbol", {
+                                 title: symbol,
+                                 spreads: value,
+                              })
+                              .then(function (response) {})
+                              .catch(function (error) {
+                                 console.log(error);
+                              });
                         }
                      }
                   }
