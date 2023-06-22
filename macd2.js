@@ -108,7 +108,7 @@ function testMacd() {
          goodCurrencies.forEach((currency, index) => {
             const symbol = currency.symbol;
             client
-               .candles({ symbol: symbol, interval: "1d", limit: 100 })
+               .candles({ symbol: symbol, interval: "1h", limit: 100 })
                .then((candles) => {
                   // Extract the closing prices from the candlestick data
                   const closePrices = candles.map((candle) =>
