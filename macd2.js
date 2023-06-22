@@ -143,15 +143,7 @@ function testMacd() {
                         if (maStochLineCurrent > maStochRsiLineCurrent) {
                            console.log(symbol);
                            console.log(value);
-                           axios
-                              .post("http://localhost:8000/api/symbol", {
-                                 title: symbol,
-                                 spreads: value,
-                              })
-                              .then(function (response) {})
-                              .catch(function (error) {
-                                 console.log(error);
-                              });
+
                         }
                      }
                   }
