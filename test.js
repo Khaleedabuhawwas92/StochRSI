@@ -8,6 +8,9 @@ const client = Binance();
 const symbol = "LINAUSDT";
 const interval = "4h";
 
+// form serch
+// const kRange = [20, 23];
+// const dRange = [19, 22];
 // Set the periods for MA Stoch Line and MA Stoch RSI Line
 const stochLinePeriod = 14;
 const rsiLinePeriod = 14;

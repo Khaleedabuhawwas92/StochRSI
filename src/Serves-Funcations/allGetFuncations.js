@@ -8,7 +8,6 @@ const client = Binance({
       "V7yf8DwR5Nw3hjW9pmge7nxlc0AK8WdIKIrq4YbfbLMQJao8t1pQYxdMyD5p3kF6",
    timestamp: 5000,
 });
-const symbol = "ADXUSDT";
 
 function getAccountBalanceAllYourCrypto() {
    client
@@ -123,7 +122,7 @@ const getAccountBalanceUSDT = async () => {
       );
 
       if (usdtBalance) {
-         const usdtQuantity = parseFloat(usdtBalance.free) ;
+         const usdtQuantity = parseFloat(usdtBalance.free -1);
          console.log(usdtQuantity);
          return usdtQuantity;
       } else {
@@ -181,7 +180,7 @@ async function getAccountBalanceUSDTMinusOne() {
       throw error;
    }
 }
-getAccountBalanceUSDT()
+getAccountBalanceUSDT();
 exports.getSymbolPrice = getSymbolPrice;
 exports.getAccountBalanceUSDT = getAccountBalanceUSDT;
 exports.getQuantity = getQuantity;

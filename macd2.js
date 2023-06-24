@@ -67,70 +67,73 @@ async function placeLimitOrder(symbol, side, price, quantity) {
    try {
       const symbolInfo = await getSymbolInfo(symbol);
       const calculatedQuantity = calculateOrderQuantity(symbolInfo, quantity);
-      const order = await client.newOrder({
-         symbol: symbol,
-         side: side,
-         type: "MARKET",
-         price: price,
-         quantity: calculatedQuantity.toString(),
-      });
-      console.log("Limit order placed successfully:", order);
+      // const order = await client.newOrder({
+      //    symbol: symbol,
+      //    side: side,
+      //    type: "MARKET",
+      //    price: price,
+      //    quantity: calculatedQuantity.toString(),
+      // });
+      console.log("Limit order placed successfully:", calculatedQuantity);
    } catch (error) {
       console.error("Error placing limit order:", error);
    }
 }
+
 function testMacd() {
-   client
-      .exchangeInfo()
-      .then((exchangeInfo) => {
-         // Get all symbols
-         const symbols = exchangeInfo.symbols;
-         const array2 = [
-            "BUSDUSDT",
-            "USDCUSDT",
-            "TUSDUSDT",
-            "BTCUSDT",
-            "ETHUSDT",
-            "USDPUSDT",
-         ];
-         // Filter for cryptocurrencies of interest
-         const goodCurrencies = symbols.filter(
-            (symbol) =>
-               symbol.quoteAsset === "USDT" &&
-               symbol.isSpotTradingAllowed &&
-               symbol.status === "TRADING" &&
-               !array2.includes(symbol.symbol)
 
-            // Filter condition - adjust as per your requirements
-         );
+      client
+         .exchangeInfo()
+         .then((exchangeInfo) => {
+            // Get all symbols
+            const symbols = exchangeInfo.symbols;
+            const array2 = [
+               "BUSDUSDT",
+               "USDCUSDT",
+               "TUSDUSDT",
+               "BTCUSDT",
+               "ETHUSDT",
+               "USDPUSDT",
+               "EURUSDT",
+            ];
+            // Filter for cryptocurrencies of interest
+            const goodCurrencies = symbols.filter(
+               (symbol) =>
+                  symbol.quoteAsset === "USDT" &&
+                  symbol.isSpotTradingAllowed &&
+                  symbol.status === "TRADING" &&
+                  !array2.includes(symbol.symbol)
+               // Filter condition - adjust as per your requirements
+            );
 
-         // Iterate over the filtered currencies
-         goodCurrencies.forEach((currency, index) => {
-            const symbol = currency.symbol;
-            client
-               .candles({ symbol: symbol, interval: "1h", limit: 100 })
-               .then((candles) => {
-                  // Extract the closing prices from the candlestick data
-                  const closePrices = candles.map((candle) =>
-                     parseFloat(candle.close)
-                  );
+            // Iterate over the filtered currencies
+            goodCurrencies.forEach((currency, index) => {
+               const symbol = currency.symbol;
+               client
+                  .candles({ symbol: symbol, interval: "4h", limit: 500 })
+                  .then((candles) => {
+                     // Extract the closing prices from the candlestick data
+                     const closePrices = candles.map((candle) =>
+                        parseFloat(candle.close)
+                     );
 
-                  // Calculate the Stochastic RSI
-                  const stochRsiInput = {
-                     values: closePrices,
-                     rsiPeriod: rsiLinePeriod,
-                     stochasticPeriod: stochLinePeriod,
-                     kPeriod,
-                     dPeriod,
-                  };
-                  const stochRsi = StochasticRSI.calculate(stochRsiInput);
+                     // Calculate the Stochastic RSI
+                     const stochRsiInput = {
+                        values: closePrices,
+                        rsiPeriod: rsiLinePeriod,
+                        stochasticPeriod: stochLinePeriod,
+                        kPeriod,
+                        dPeriod,
+                     };
+                     const stochRsi = StochasticRSI.calculate(stochRsiInput);
 
-                  // Get the last value of the MA Stoch Line and MA Stoch RSI Line
-                  const maStochLineCurrent = stochRsi[stochRsi.length - 1].k;
-                  const maStochRsiLineCurrent = stochRsi[stochRsi.length - 1].d;
+                     // Get the last value of the MA Stoch Line and MA Stoch RSI Line
+                     const maStochLineCurrent = stochRsi[stochRsi.length - 1].k;
+                     const maStochRsiLineCurrent =
+                        stochRsi[stochRsi.length - 1].d;
 
-                  // Check if the MA Stoch Line is up
-                  if (maStochLineCurrent > 0) {
+                     // Check if the MA Stoch Line is up
+
                      // Check if the MA Stoch RSI Line is between %K and %D range
                      if (
                         maStochLineCurrent >= kRange[0] &&
@@ -138,32 +141,49 @@ function testMacd() {
                         maStochRsiLineCurrent >= dRange[0] &&
                         maStochRsiLineCurrent <= dRange[1]
                      ) {
-                        const value =
-                           maStochLineCurrent - maStochRsiLineCurrent;
                         if (maStochLineCurrent > maStochRsiLineCurrent) {
-                           console.log(symbol);
-                           console.log(value);
-
-                        }else{
-
+                           const value =
+                              maStochLineCurrent - maStochRsiLineCurrent;
+                           axios
+                              .post("http://localhost:8000/api/symbol", {
+                                 title: symbol,
+                                 spreads: value,
+                              })
+                              .then(function (response) {})
+                              .catch(function (error) {
+                                 console.log("error");
+                              });
+                        } else {
                         }
-                     }else{
-
+                     } else {
                      }
-                  }else{
+                  })
+                  .catch((error) => {});
 
-                  }
-               })
-               .catch((error) => {
-
-               });
-
-            // Fetch historical candlestick data for the symbol
+               // Fetch historical candlestick data for the symbol
+            });
+         })
+         .catch((error) => {
+            console.log("Error " + symbol);
          });
-      })
-      .catch((error) => {
-         console.log("Error " +symbol);
+
+
+
+
+}
+function find2() {
+   return new Promise((resolve, reject) => {
+      axios.get("http://localhost:8000/api/symbol").then(function (response) {
+         console.log(response.data[0].title);
       });
+
+      resolve();
+   });
+}
+function deleteData() {
+   axios.delete("http://localhost:8000/api/symbol").then(function () {
+      console.log("delet sccsess");
+   });
 }
 
 // Define the parameters for the limit order
@@ -271,4 +291,6 @@ const getCandleData3 = async (symbol) => {
       return [];
    }
 };
-testMacd();
+testMacd()
+
+// deleteData();

@@ -30,20 +30,22 @@ const eRange = [0, 20];
 
 // Function to check the MACD and execute trades
 
-async function getLastOrder() {
+async function getLastOrder(symbol) {
    try {
-      const trades = await client.myTrades({ symbol });
-      if (trades.length > 0) {
-         const lastTrade = trades[trades.length - 1];
-         if (lastTrade.isBuyer) {
+      const Orders = await client.allOrders({ symbol });
+      if (Orders.length > 0) {
+         const lastOrders = Orders[Orders.length - 1];
+         if (lastOrders.side ==="BUY") {
             console.log("Buyed");
          } else {
+
             BuyMarket(symbol);
             console.log("now Buy");
          }
          // Perform actions with the last order data
       } else {
          BuyMarket(symbol);
+         console.log("new symbol Buy");
       }
    } catch (error) {
       console.error("Error retrieving last order:", error);
@@ -51,10 +53,10 @@ async function getLastOrder() {
 }
 async function getLastOrde4Sell(symbol) {
    try {
-      const trades = await client.myTrades({ symbol });
-      if (trades.length > 0) {
-         const lastTrade = trades[trades.length - 1];
-         if (!lastTrade.isBuyer) {
+      const Orders = await client.allOrders({ symbol });
+      if (Orders.length > 0) {
+         const lastOrders = Orders[Orders.length - 1];
+         if (lastOrders.side ==="SELL") {
             console.log("Selld");
          } else {
             SellMarket(symbol);
@@ -90,6 +92,7 @@ async function checkStochRSI() {
 
          // Check if the MA Stoch Line is up
          if (maStochLineCurrent > 0) {
+            const gapToSell = maStochRsiLineCurrent - maStochLineCurrent;
             // Check if the MA Stoch RSI Line is between %K and %D range
             if (
                maStochLineCurrent >= kRange[0] &&
@@ -99,7 +102,10 @@ async function checkStochRSI() {
             ) {
                if (maStochLineCurrent > maStochRsiLineCurrent) {
                   getLastOrder(symbol);
-               } else if (maStochLineCurrent < maStochRsiLineCurrent) {
+               } else if (
+                  maStochLineCurrent < maStochRsiLineCurrent &&
+                  gapToSell >= 7
+               ) {
                   getLastOrde4Sell(symbol);
                }
             } else {
