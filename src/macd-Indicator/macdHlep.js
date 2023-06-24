@@ -3,9 +3,9 @@
 const Binance = require("binance-api-node").default;
 const { MACD } = require("technicalindicators");
 const client = Binance({
-   apiKey: "hoKzEzGOsf23NPbfibLrThDJQoQLXhHAC89nO3ziDHdRIKrh35eoLxtdfxifKHR7",
+   apiKey: "PdUrHr6ytmyyNQExWXZSvluBJN644BNk8w8tasCqgluPuW3VWn1BxhPPVWcdnzIY",
    apiSecret:
-      "UCOtewC7rgq4ANr8a2h9l3bYvi1t5vFJBUTMuf3Z7fWNSg9Cpg61IygmJ2XTmEAF",
+      "kZyEEoaIHQ8dmrdQIkye6GbkPi26tdVxrYzxdksGrH01VCKSJQV6JhIFboTPZs1q",
    timestamp: 5000,
 });
 
