@@ -14,8 +14,8 @@ const client = Binance({
       "kZyEEoaIHQ8dmrdQIkye6GbkPi26tdVxrYzxdksGrH01VCKSJQV6JhIFboTPZs1q",
    timestamp: 5000,
 });
-const symbol = "ADAUSDT";
-const interval = "4h";
+const symbol = "YFIIUSDT";
+const interval = "1h";
 const stochLinePeriod = 14;
 const rsiLinePeriod = 14;
 const kPeriod = 3;
