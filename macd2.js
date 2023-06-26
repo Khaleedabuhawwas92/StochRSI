@@ -5,9 +5,9 @@ const axios = require("axios");
 
 // Instantiate the client with your API key and secret
 const client = Binance({
-   apiKey: "hoKzEzGOsf23NPbfibLrThDJQoQLXhHAC89nO3ziDHdRIKrh35eoLxtdfxifKHR7",
+   apiKey: "9MDlaXiZ3v97EwANLckWfnEliYySPp4ejJYCw4XnH4bbUzi5F3PPK1Genx0Ym4vZ",
    apiSecret:
-      "UCOtewC7rgq4ANr8a2h9l3bYvi1t5vFJBUTMuf3Z7fWNSg9Cpg61IygmJ2XTmEAF",
+      "V7yf8DwR5Nw3hjW9pmge7nxlc0AK8WdIKIrq4YbfbLMQJao8t1pQYxdMyD5p3kF6",
    timestamp: 5000,
 });
 const symbol = "LINAUSDT";
@@ -81,100 +81,99 @@ async function placeLimitOrder(symbol, side, price, quantity) {
 }
 
 function testMacd() {
+   client
+      .exchangeInfo()
+      .then((exchangeInfo) => {
+         // Get all symbols
+         const symbols = exchangeInfo.symbols;
+         const array2 = [
+            "BUSDUSDT",
+            "USDCUSDT",
+            "TUSDUSDT",
+            "BTCUSDT",
+            "ETHUSDT",
+            "USDPUSDT",
+            "EURUSDT",
+         ];
+         // Filter for cryptocurrencies of interest
+         const goodCurrencies = symbols.filter(
+            (symbol) =>
+               symbol.quoteAsset === "USDT" &&
+               symbol.isSpotTradingAllowed &&
+               symbol.status === "TRADING" &&
+               !array2.includes(symbol.symbol)
+            // Filter condition - adjust as per your requirements
+         );
 
-      client
-         .exchangeInfo()
-         .then((exchangeInfo) => {
-            // Get all symbols
-            const symbols = exchangeInfo.symbols;
-            const array2 = [
-               "BUSDUSDT",
-               "USDCUSDT",
-               "TUSDUSDT",
-               "BTCUSDT",
-               "ETHUSDT",
-               "USDPUSDT",
-               "EURUSDT",
-            ];
-            // Filter for cryptocurrencies of interest
-            const goodCurrencies = symbols.filter(
-               (symbol) =>
-                  symbol.quoteAsset === "USDT" &&
-                  symbol.isSpotTradingAllowed &&
-                  symbol.status === "TRADING" &&
-                  !array2.includes(symbol.symbol)
-               // Filter condition - adjust as per your requirements
-            );
+         // Iterate over the filtered currencies
+         goodCurrencies.forEach((currency, index) => {
+            const symbol = currency.symbol;
+            client
+               .candles({ symbol: symbol, interval: "1h", limit: 500 })
+               .then((candles) => {
+                  // Extract the closing prices from the candlestick data
+                  const closePrices = candles.map((candle) =>
+                     parseFloat(candle.close)
+                  );
 
-            // Iterate over the filtered currencies
-            goodCurrencies.forEach((currency, index) => {
-               const symbol = currency.symbol;
-               client
-                  .candles({ symbol: symbol, interval: "4h", limit: 500 })
-                  .then((candles) => {
-                     // Extract the closing prices from the candlestick data
-                     const closePrices = candles.map((candle) =>
-                        parseFloat(candle.close)
-                     );
+                  // Calculate the Stochastic RSI
+                  const stochRsiInput = {
+                     values: closePrices,
+                     rsiPeriod: rsiLinePeriod,
+                     stochasticPeriod: stochLinePeriod,
+                     kPeriod,
+                     dPeriod,
+                  };
+                  const stochRsi = StochasticRSI.calculate(stochRsiInput);
 
-                     // Calculate the Stochastic RSI
-                     const stochRsiInput = {
-                        values: closePrices,
-                        rsiPeriod: rsiLinePeriod,
-                        stochasticPeriod: stochLinePeriod,
-                        kPeriod,
-                        dPeriod,
-                     };
-                     const stochRsi = StochasticRSI.calculate(stochRsiInput);
+                  // Get the last value of the MA Stoch Line and MA Stoch RSI Line
+                  const maStochLineCurrent = stochRsi[stochRsi.length - 1].k;
+                  const maStochRsiLineCurrent = stochRsi[stochRsi.length - 1].d;
 
-                     // Get the last value of the MA Stoch Line and MA Stoch RSI Line
-                     const maStochLineCurrent = stochRsi[stochRsi.length - 1].k;
-                     const maStochRsiLineCurrent =
-                        stochRsi[stochRsi.length - 1].d;
+                  // Check if the MA Stoch Line is up
 
-                     // Check if the MA Stoch Line is up
+                  // Check if the MA Stoch RSI Line is between %K and %D range
+                  if (
+                     maStochLineCurrent >= kRange[0] &&
+                     maStochLineCurrent <= kRange[1] &&
+                     maStochRsiLineCurrent >= dRange[0] &&
+                     maStochRsiLineCurrent <= dRange[1]
+                  ) {
+                     if (maStochLineCurrent > maStochRsiLineCurrent) {
+                        // const value =
+                        //    maStochLineCurrent - maStochRsiLineCurrent;
+                        const value =
+                           maStochLineCurrent - maStochRsiLineCurrent;
 
-                     // Check if the MA Stoch RSI Line is between %K and %D range
-                     if (
-                        maStochLineCurrent >= kRange[0] &&
-                        maStochLineCurrent <= kRange[1] &&
-                        maStochRsiLineCurrent >= dRange[0] &&
-                        maStochRsiLineCurrent <= dRange[1]
-                     ) {
-                        if (maStochLineCurrent > maStochRsiLineCurrent) {
-                           const value =
-                              maStochLineCurrent - maStochRsiLineCurrent;
-                           axios
-                              .post("http://localhost:8000/api/symbol", {
-                                 title: symbol,
-                                 spreads: value,
-                              })
-                              .then(function (response) {})
-                              .catch(function (error) {
-                                 console.log("error");
-                              });
-                        } else {
-                        }
+                        axios
+                           .post("http://localhost:8000/api/symbol", {
+                              title: symbol,
+                              spreads: value,
+                           })
+                           .then(function (response) {
+                              console.log(response.data);
+                           })
+                           .catch(function (error) {
+                              console.log("error");
+                           });
                      } else {
                      }
-                  })
-                  .catch((error) => {});
+                  } else {
+                  }
+               })
+               .catch((error) => {});
 
-               // Fetch historical candlestick data for the symbol
-            });
-         })
-         .catch((error) => {
-            console.log("Error " + symbol);
+            // Fetch historical candlestick data for the symbol
          });
-
-
-
-
+      })
+      .catch((error) => {
+         console.log("Error " + symbol);
+      });
 }
 function find2() {
    return new Promise((resolve, reject) => {
       axios.get("http://localhost:8000/api/symbol").then(function (response) {
-         console.log(response.data[0].title);
+         console.log(response.data[1].title);
       });
 
       resolve();
@@ -291,6 +290,8 @@ const getCandleData3 = async (symbol) => {
       return [];
    }
 };
-testMacd()
+
+testMacd();
+
 
 // deleteData();

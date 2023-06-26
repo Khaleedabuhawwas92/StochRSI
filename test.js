@@ -1,5 +1,7 @@
 const Binance = require("binance-api-node").default;
 const { StochasticRSI } = require("technicalindicators");
+const cron = require("node-cron");
+
 
 // Create a Binance API client
 const client = Binance();
@@ -72,5 +74,7 @@ function checkStochRSI() {
       });
 }
 
-const intervalTime = 1000; // Interval time in milliseconds
-setInterval(checkStochRSI, intervalTime);
+
+
+// const intervalTime = 1000; // Interval time in milliseconds
+// setInterval(checkStochRSI, intervalTime);
