@@ -14,7 +14,7 @@ const client = Binance({
       "kZyEEoaIHQ8dmrdQIkye6GbkPi26tdVxrYzxdksGrH01VCKSJQV6JhIFboTPZs1q",
    timestamp: 5000,
 });
-const symbol = "YFIIUSDT";
+const symbol = "ALGOUSDT";
 const interval = "1h";
 const stochLinePeriod = 14;
 const rsiLinePeriod = 14;
